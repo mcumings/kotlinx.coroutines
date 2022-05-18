@@ -301,6 +301,20 @@ allprojects {
     CacheRedirector.configure(project)
 }
 
+// --------------- Java 9 modularity ---------------
+
+// Currently the compilation of the module-info fails for
+// kotlinx.coroutines.debug because it export packages
+// that also exist in kotlinx.coroutines.core.
+// Note that only 1 module can export a package.
+def invalidModules = ["kotlinx-coroutines-debug"]
+
+configure(subprojects.findAll {
+    !unpublished.contains(it.name) && !invalidModules.contains(it.name) && it.extensions.findByName("kotlin") != null
+}) {
+    Java9Modularity.configure(project)
+}
+
 // --------------- Configure sub-projects that are published ---------------
 
 def publishTasks = getTasksByName("publish", true) + getTasksByName("publishNpm", true)
