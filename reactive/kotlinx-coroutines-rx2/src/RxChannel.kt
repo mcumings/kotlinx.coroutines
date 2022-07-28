@@ -18,7 +18,7 @@ import kotlinx.coroutines.reactive.*
  * If [action] throws an exception at some point or if the [MaybeSource] raises an error, the exception is rethrown from
  * [collect].
  */
-public suspend inline fun <T> MaybeSource<T>.collect(action: (T) -> Unit): Unit =
+public suspend inline fun <T:Any> MaybeSource<T:Any>.collect(action: (T) -> Unit): Unit =
     toChannel().consumeEach(action)
 
 /**
@@ -27,11 +27,11 @@ public suspend inline fun <T> MaybeSource<T>.collect(action: (T) -> Unit): Unit 
  * If [action] throws an exception at some point, the subscription is cancelled, and the exception is rethrown from
  * [collect]. Also, if the [ObservableSource] signals an error, that error is rethrown from [collect].
  */
-public suspend inline fun <T> ObservableSource<T>.collect(action: (T) -> Unit): Unit =
+public suspend inline fun <T:Any> ObservableSource<T>.collect(action: (T) -> Unit): Unit =
     toChannel().consumeEach(action)
 
 @PublishedApi
-internal fun <T> MaybeSource<T>.toChannel(): ReceiveChannel<T> {
+internal fun <T:Any> MaybeSource<T:Any>.toChannel(): ReceiveChannel<T> {
     val channel = SubscriptionChannel<T>()
     subscribe(channel)
     return channel
@@ -45,7 +45,7 @@ internal fun <T> ObservableSource<T>.toChannel(): ReceiveChannel<T> {
 }
 
 @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-private class SubscriptionChannel<T> :
+private class SubscriptionChannel<T:Any> :
     LinkedListChannel<T>(null), Observer<T>, MaybeObserver<T>
 {
     private val _subscription = atomic<Disposable?>(null)

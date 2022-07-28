@@ -26,7 +26,7 @@ public fun <T> rxMaybe(
     return rxMaybeInternal(GlobalScope, context, block)
 }
 
-private fun <T> rxMaybeInternal(
+private fun <T:Any> rxMaybeInternal(
     scope: CoroutineScope, // support for legacy rxMaybe in scope
     context: CoroutineContext,
     block: suspend CoroutineScope.() -> T?
@@ -37,7 +37,7 @@ private fun <T> rxMaybeInternal(
     coroutine.start(CoroutineStart.DEFAULT, coroutine, block)
 }
 
-private class RxMaybeCoroutine<T>(
+private class RxMaybeCoroutine<T:Any>(
     parentContext: CoroutineContext,
     private val subscriber: MaybeEmitter<T>
 ) : AbstractCoroutine<T>(parentContext, false, true) {
